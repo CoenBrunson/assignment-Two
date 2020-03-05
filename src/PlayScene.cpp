@@ -10,8 +10,39 @@
 // Pathfinding & Steering functions ***********************************************
 
 
+/* TODO:
+generatePath()
+{
+	vars needed:
+	two dimensional int array(NUM_ROW.size, NUM_COL.size)
+
+	value types:
+	- if it's 0, it's walkable
+	- if it's 1/2, it's an entry/exit
+	- if it's >= 3, it's a type of wall
+
+	possibility1:
+	start by creating 1 (entry) at random tile position on left
+	create exit on random tile position at right
+	perlin noise through to create singular path
+	rng paths out/connecting
+	
+	possibility2:
+	generate random values for each using certain exceptions (if thisNum = 4 (top), next ROW must be rand from 4-5 (top, topRight),
+	if nextTile was 5 (topRight), nextRow would have to be 0 (floor)
+	A* through, checking for at least one path to other side
+	if path, create GOAL tiles (2) at end of path
+	if no path, re-randomize vals
+
+
+	hold values
+*/
+
+
 void PlayScene::m_buildGrid()
 {
+	//TODO: use vals from generatePath()
+	//grab vals from arrays
 	const auto size = Config::TILE_SIZE;
 	const auto offset = size * 0.5;
 
@@ -21,7 +52,7 @@ void PlayScene::m_buildGrid()
 	{
 		for (int a = 0; a < Config::COL_NUM; a++)
 		{
-			auto tile = new Tile(glm::vec2(offset + (size * a), offset + (size * i)), glm::vec2(a, i));
+			auto tile = new Tile(glm::vec2(offset + (size * a), offset + (size * i)), glm::vec2(a, i), /*valArray[i][a]*/);
 			addChild(tile);
 			tile->setTileState(UNDEFINED);
 			tileGrid.push_back(tile);
@@ -260,7 +291,11 @@ void PlayScene::computeTileVals()
 {
 	for (auto tile : tileGrid)
 	{
-		tile->setTargetDistance(m_pPlanet->getPosition());
+		if (tile->val == 0) {
+			tile->setTargetDistance(m_pPlanet->getPosition());
+		}
+		else if (tile->val == 1)
+			tile->setTargetDistance(glm::vec2(10000, 10000));
 	}
 }
 

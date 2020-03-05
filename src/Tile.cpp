@@ -4,15 +4,66 @@
 #include <iomanip>
 #include <sstream>
 
-Tile::Tile(glm::vec2 position, glm::vec2 gridPosition):
+Tile::Tile(glm::vec2 position, glm::vec2 gridPosition, int value):
 	m_gridPosition(gridPosition)
 {
-	TheTextureManager::Instance()->load("../Assets/textures/tile.png",
-		"tile", TheGame::Instance()->getRenderer());
+	val = value;
 
-	glm::vec2 size = TheTextureManager::Instance()->getTextureSize("tile");
-	setWidth(size.x);
-	setHeight(size.y);
+	switch (value)
+	{
+	case FLOOR:
+		TheTextureManager::Instance()->load("../Assets/textures/tileOne.png",
+			"thisTile", TheGame::Instance()->getRenderer());
+		break;
+	case TOP_LEFT_IN:
+		TheTextureManager::Instance()->load("../Assets/textures/tileTwo.png",
+			"thisTile", TheGame::Instance()->getRenderer());
+		break;
+	case TOP_LEFT_OUT:
+		TheTextureManager::Instance()->load("../Assets/textures/tileThree.png",
+			"thisTile", TheGame::Instance()->getRenderer());
+		break;
+	case LEFT_WALL:
+		TheTextureManager::Instance()->load("../Assets/textures/tileFour.png",
+			"thisTile", TheGame::Instance()->getRenderer());
+		break;
+	case BOTTOM_LEFT_IN:
+		TheTextureManager::Instance()->load("../Assets/textures/tileFive.png",
+			"thisTile", TheGame::Instance()->getRenderer());
+		break;
+	case BOTTOM_LEFT_OUT:
+		TheTextureManager::Instance()->load("../Assets/textures/tileSix.png",
+			"thisTile", TheGame::Instance()->getRenderer());
+		break;
+	case BOTTOM_WALL:
+		TheTextureManager::Instance()->load("../Assets/textures/tileSeven.png",
+			"thisTile", TheGame::Instance()->getRenderer());
+		break;
+	case BOTTOM_RIGHT_IN:
+		TheTextureManager::Instance()->load("../Assets/textures/tileEight.png",
+			"thisTile", TheGame::Instance()->getRenderer());
+		break;
+	case RIGHT_WALL:
+		TheTextureManager::Instance()->load("../Assets/textures/tileNine.png",
+			"thisTile", TheGame::Instance()->getRenderer());
+		break;
+	case TOP_RIGHT_IN:
+		TheTextureManager::Instance()->load("../Assets/textures/tileTen.png",
+			"thisTile", TheGame::Instance()->getRenderer());
+		break;
+	case TOP_RIGHT_OUT:
+		TheTextureManager::Instance()->load("../Assets/textures/tileEleven.png",
+			"thisTile", TheGame::Instance()->getRenderer());
+		break;
+	case TOP_WALL:
+		TheTextureManager::Instance()->load("../Assets/textures/tileTwelve.png",
+			"thisTile", TheGame::Instance()->getRenderer());
+		break;
+	}
+
+	glm::vec2 size = glm::vec2(Config::TILE_SIZE, Config::TILE_SIZE);
+	setWidth(Config::TILE_SIZE);
+	setHeight(Config::TILE_SIZE);
 	setPosition(position);
 
 	std::ostringstream tempLabel;
@@ -136,14 +187,15 @@ TileState Tile::getTileState()
 
 void Tile::setTargetDistance(glm::vec2 goalLocation)
 {
-	m_goalLocation = goalLocation;
+		m_goalLocation = goalLocation;
 
-	m_tileValue = Util::distance(getPosition(), goalLocation) * 0.1;
+		m_tileValue = Util::distance(getPosition(), goalLocation) * 0.1;
 
-	std::ostringstream tempLabel;
-	tempLabel << std::fixed << std::setprecision(1) << m_tileValue;
-	std::string labelstring = tempLabel.str();
-	m_pValueLabel->setText(labelstring);
+		std::ostringstream tempLabel;
+		tempLabel << std::fixed << std::setprecision(1) << m_tileValue;
+		std::string labelstring = tempLabel.str();
+		m_pValueLabel->setText(labelstring);
+	
 }
 
 glm::vec2 Tile::getGridPosition()

@@ -82,4 +82,17 @@ void StartScene::start()
 	m_pShip = new Ship();
 	m_pShip->setPosition(glm::vec2(400.0f, 300.0f));
 	addChild(m_pShip);
+
+	m_recurse(1, 2, 20);
+}
+
+int StartScene::m_recurse(int x, int i, int a)
+{
+	std::cout << x << std::endl;
+	x++;
+	if (x < a)
+	{
+		x = m_recurse(x, i, a);
+	}
+	return x;
 }

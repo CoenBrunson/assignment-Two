@@ -16,7 +16,28 @@ enum TileState {
 	START,
 	GOAL,
 	UNDEFINED,
+	UNVISITED,
+	IMPASSABLE,
 	NUM_OF_TILE_STATES
+};
+
+enum TileType {
+	FLOOR,
+	RIGHT_DOOR,
+	LEFT_DOOR,
+	TOP_LEFT_OUT,
+	TOP_LEFT_IN,
+	LEFT_WALL,
+	BOTTOM_LEFT_OUT,
+	BOTTOM_LEFT_IN,
+	BOTTOM_WALL,
+	BOTTOM_RIGHT_IN,
+	BOTTOM_RIGHT_OUT,
+	RIGHT_WALL,
+	TOP_RIGHT_IN,
+	TOP_RIGHT_OUT,
+	TOP_WALL,
+	NUM_OF_TILE_TYPES
 };
 
 enum TileNeighbour
@@ -31,7 +52,7 @@ enum TileNeighbour
 class Tile : public DisplayObject
 {
 public:
-	Tile(glm::vec2 position = glm::vec2(), glm::vec2 gridPosition = glm::vec2());
+	Tile(glm::vec2 position = glm::vec2(), glm::vec2 gridPosition = glm::vec2(), int value = 0);
 	~Tile();
 
 	// Inherited via GameObject
@@ -63,6 +84,8 @@ public:
 	float getTileValue();
 
 	void setTileStateLabel(std::string closedOpen);
+
+	int val;
 
 private:
 	float m_cost = Config::TILE_COST;

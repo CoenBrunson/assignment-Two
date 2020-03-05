@@ -24,6 +24,8 @@ private:
 	Label* m_pInstructionsLabel;
 
 	Ship* m_pShip;
+
+	int m_recurse(int x, int i, int a);
 };
 
 #endif /* defined (__START_SCENE__) */

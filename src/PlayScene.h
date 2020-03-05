@@ -58,6 +58,7 @@ private:
 
 	int m_spawnObject(PFDispObj* obj);
 
+	int valArray[Config::ROW_NUM][Config::COL_NUM];
 };
 
 #endif /* defined (__PLAY_SCENE__) */
