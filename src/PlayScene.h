@@ -39,7 +39,7 @@ private:
 
 	void generateMaze();
 
-	void generateFirstPath();
+	void generateFirstPath(int y);
 
 	void generateMaze();
 
@@ -71,8 +71,10 @@ private:
 	const int xSize = Config::COL_NUM;
 	const int ySize = Config::ROW_NUM;
 	int pathLength = 0;
+	int nextSpot;
 
-	void generateSmallPaths();
+	void generateSmallPaths(int x, int y);
+	bool spaceOpen();
 };
 
 #endif /* defined (__PLAY_SCENE__) */

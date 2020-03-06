@@ -63,8 +63,16 @@ void PlayScene::generateMaze()
 			valArray[ySize][j] == 6;
 	}
 	
-	generateFirstPath();
+	generateFirstPath(tempY);
 
+	for (int i = 0; i < ySize; i++)
+	{
+		for (int j = 0; j < xSize; j++)
+		{
+			if (valArray[i][j] == 0)
+				generateSmallPaths(i, j);
+		}
+	}
 }
 
 void PlayScene::findNext()
@@ -73,7 +81,7 @@ void PlayScene::findNext()
 
 	do
 	{
-		int nextSpot = rand() % 4;
+		nextSpot = rand() % 4;
 		switch (nextSpot) {
 		case 0:
 			nextX = thisX - 1;
@@ -100,16 +108,8 @@ void PlayScene::findNext()
 }
 
 
-void PlayScene::generateFirstPath()
+void PlayScene::generateFirstPath(int y)
 {
-	thisX = 0;
-	for (int i = 0; i < ySize; i++)
-	{
-		if (valArray[i][0] == 13)
-		{
-			thisY = i;
-		}
-	}
 
 	bool pathCreating = true;
 
@@ -125,32 +125,98 @@ void PlayScene::generateFirstPath()
 		}
 		else if (valArray[nextY][nextX] != NULL)
 		{
-			if (pathLength >= 16) {
+			if (pathLength >= 24) {
 				valArray[nextY][nextX] = 14;
 				pathCreating = false;
 			}
 		}
-
 	} while (pathCreating);
 }
 
 
-void PlayScene::generateSmallPaths()
+void PlayScene::generateSmallPaths(int x, int y)
 {
+	thisX = x;
+	thisY = y;
 	bool pathCreating = true;
+	pathLength = 0;
 
 	do
 	{
 		findNext();
 		if (valArray[nextY][nextX] == NULL)
 		{
-			thisX = nextX;
-			thisY = nextY;
-			valArray[thisY][thisX] = 0;
-			pathLength++;
+			if (spaceOpen)
+			{
+				thisX = nextX;
+				thisY = nextY;
+				valArray[thisY][thisX] = 0;
+				pathLength++;
+
+				if (pathLength >= 10)
+					pathCreating = false;
+			}
 		}
 
 	} while (pathCreating);
+}
+
+bool PlayScene::spaceOpen()
+{
+	switch (nextSpot) {
+	case 0:
+		for (int i = nextY - 2; i < nextY + 2; i++)
+		{
+			for (int j = nextX - 2; j < nextX; j++)
+			{
+				if (valArray[i][j] != NULL) {
+					return false;
+					break;
+				}
+				else
+					return true;
+			}
+		}
+	case 1:
+		for (int i = nextY; i < nextY + 2; i++)
+		{
+			for (int j = nextX - 2; j < nextX + 2; j++)
+			{
+				if (valArray[i][j] != NULL) {
+					return false;
+					break;
+				}
+				else
+					return true;
+			}
+		}
+	case 2:
+		for (int i = nextY - 2; i < nextY + 2; i++)
+		{
+			for (int j = nextX; j < nextX + 2; j++)
+			{
+				if (valArray[i][j] != NULL) {
+					return false;
+					break;
+				}
+				else
+					return true;
+			}
+		}
+	case 3:
+		for (int i = nextY - 2; i < nextY; i++)
+		{
+			for (int j = nextX - 2; j < nextX + 2; j++)
+			{
+				if (valArray[i][j] != NULL) {
+					return false;
+					break;
+				}
+				else
+					return true;
+			}
+		}
+	}
 }
 
 void PlayScene::m_buildGrid()
@@ -166,9 +232,8 @@ void PlayScene::m_buildGrid()
 	{
 		for (int a = 0; a < Config::COL_NUM; a++)
 		{
-			auto tile = new Tile(glm::vec2(offset + (size * a), offset + (size * i)), glm::vec2(a, i), /*valArray[i][a]*/);
+			auto tile = new Tile(glm::vec2(offset + (size * a), offset + (size * i)), glm::vec2(a, i), valArray[i][a]);
 			addChild(tile);
-			tile->setTileState(UNDEFINED);
 			tileGrid.push_back(tile);
 		}
 	}
