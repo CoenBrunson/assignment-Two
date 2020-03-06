@@ -18,14 +18,12 @@ Game::Game() :
 	
 }
 
-Game::~Game()
-{
-}
+Game::~Game() = default;
 
 
-bool Game::init(const char* title, int xpos, int ypos, int width, int height, bool fullscreen)
+bool Game::init(const char* title, const int x, const int y, const int width, const int height, bool fullscreen)
 {
-	int flags = 0;
+	auto flags = 0;
 
 	if (fullscreen)
 	{
@@ -38,19 +36,19 @@ bool Game::init(const char* title, int xpos, int ypos, int width, int height, bo
 		std::cout << "SDL Init success" << std::endl;
 
 		// if succeeded create our window
-		m_pWindow = SDL_CreateWindow(title, xpos, ypos, width, height, flags);
+		m_pWindow = (Config::make_resource(SDL_CreateWindow(title, x, y, width, height, flags)));
 
 		// if window creation successful create our renderer
 		if (m_pWindow != 0)
 		{
 			std::cout << "window creation success" << std::endl;
-			m_pRenderer = SDL_CreateRenderer(m_pWindow, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
+			m_pRenderer = (Config::make_resource(SDL_CreateRenderer(m_pWindow.get(), -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC)));
 
 
 			if (m_pRenderer != 0) // render init success
 			{
 				std::cout << "renderer creation success" << std::endl;
-				SDL_SetRenderDrawColor(m_pRenderer, 255, 255, 255, 255);
+				SDL_SetRenderDrawColor(m_pRenderer.get(), 255, 255, 255, 255);
 			}
 			else
 			{
@@ -60,7 +58,7 @@ bool Game::init(const char* title, int xpos, int ypos, int width, int height, bo
 
 			// IMGUI 
 			ImGui::CreateContext();
-			ImGuiSDL::Initialize(m_pRenderer, width, height);
+			ImGuiSDL::Initialize(m_pRenderer.get(), width, height);
 
 			// Initialize Font Support
 			if (TTF_Init() == -1)
@@ -100,12 +98,12 @@ void Game::start()
 	changeSceneState(SceneState::START_SCENE);
 }
 
-SDL_Renderer * Game::getRenderer()
+SDL_Renderer * Game::getRenderer() const
 {
-	return m_pRenderer;
+	return m_pRenderer.get();
 }
 
-glm::vec2 Game::getMousePosition()
+glm::vec2 Game::getMousePosition() const
 {
 	return m_mousePosition;
 }
@@ -115,7 +113,7 @@ void Game::setFrames(Uint32 frames)
 	m_frames = frames;
 }
 
-Uint32 Game::getFrames()
+Uint32 Game::getFrames() const
 {
 	return m_frames;
 }
@@ -134,6 +132,8 @@ void Game::changeSceneState(SceneState newState)
 			std::cout << "cleaning TextureManager" << std::endl;
 		}
 
+		delete m_currentScene;
+		m_currentScene = nullptr;
 		m_currentSceneState = newState;
 		
 		switch (m_currentSceneState)
@@ -155,7 +155,6 @@ void Game::changeSceneState(SceneState newState)
 			break;
 		}
 	}
-	
 }
 
 void Game::quit()
@@ -163,35 +162,29 @@ void Game::quit()
 	m_bRunning = false;
 }
 
-void Game::render()
+void Game::render() const
 {
-	SDL_RenderClear(m_pRenderer); // clear the renderer to the draw colour
+	SDL_RenderClear(m_pRenderer.get()); // clear the renderer to the draw colour
 
 	m_currentScene->draw();
 
-	SDL_RenderPresent(m_pRenderer); // draw to the screen
+	SDL_RenderPresent(m_pRenderer.get()); // draw to the screen
 }
 
-void Game::update()
+void Game::update() const
 {
 	m_currentScene->update();
 }
 
-void Game::clean()
+void Game::clean() const
 {
 	std::cout << "cleaning game" << std::endl;
-
-	SDL_DestroyRenderer(m_pRenderer);
-	SDL_DestroyWindow(m_pWindow);
 
 	// Clean Up for ImGui
 	ImGui::DestroyContext();
 
 	TTF_Quit();
-
 	SDL_Quit();
-
-	
 }
 
 void Game::handleEvents()

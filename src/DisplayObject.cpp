@@ -1,6 +1,13 @@
 #include "DisplayObject.h"
 
-Scene * DisplayObject::getParent()
+DisplayObject::DisplayObject() = default;
+
+DisplayObject::~DisplayObject()
+{
+	m_pParentScene = nullptr;
+}
+
+Scene * DisplayObject::getParent() const
 {
 	return m_pParentScene;
 }

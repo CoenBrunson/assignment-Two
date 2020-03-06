@@ -6,7 +6,7 @@ PFDispObj::PFDispObj() : m_currentTile(nullptr)
 
 PFDispObj::~PFDispObj() = default;
 
-Tile * PFDispObj::getTile()
+Tile * PFDispObj::getTile() const
 {
 	return m_currentTile;
 }

@@ -9,45 +9,10 @@
 #include "Config.h"
 #include "Label.h"
 #include "Scene.h"
-
-enum TileState {
-	OPEN,
-	CLOSED,
-	START,
-	GOAL,
-	UNDEFINED,
-	UNVISITED,
-	IMPASSABLE,
-	NUM_OF_TILE_STATES
-};
-
-enum TileType {
-	FLOOR,
-	RIGHT_DOOR,
-	LEFT_DOOR,
-	TOP_LEFT_OUT,
-	TOP_LEFT_IN,
-	LEFT_WALL,
-	BOTTOM_LEFT_OUT,
-	BOTTOM_LEFT_IN,
-	BOTTOM_WALL,
-	BOTTOM_RIGHT_IN,
-	BOTTOM_RIGHT_OUT,
-	RIGHT_WALL,
-	TOP_RIGHT_IN,
-	TOP_RIGHT_OUT,
-	TOP_WALL,
-	NUM_OF_TILE_TYPES
-};
-
-enum TileNeighbour
-{
-	UP,
-	RIGHT,
-	DOWN,
-	LEFT,
-	NUM_OF_NEIGHBOURS
-};
+#include "TileType.h"
+#include "TileState.h"
+#include "TileNeighbour.h"
+#include "Heuristic.h"
 
 class Tile : public DisplayObject
 {
@@ -57,9 +22,7 @@ public:
 
 	// Inherited via GameObject
 	virtual void draw() override;
-
 	virtual void update() override;
-
 	virtual void clean() override;
 
 	// get neighbours
@@ -82,12 +45,16 @@ public:
 	glm::vec2 getGridPosition();
 
 	float getTileValue();
+	void setTileValue(float new_value);
 
 	void setTileStateLabel(std::string closedOpen);
+	std::vector<Tile*> getNeighbours() const;
+	void setHeuristic(Heuristic heuristic);
 
-	int val;
+	void displayTile();
 
 private:
+	int valTemp;
 	float m_cost = Config::TILE_COST;
 	float m_targetDist = 0.0f;
 	float m_tileValue = 0.0f;
@@ -95,12 +62,9 @@ private:
 	glm::vec2 m_gridPosition;
 	Label* m_pValueLabel;
 	Label* m_pClosedOpenLabel;
-
 	glm::vec2 m_goalLocation;
-
-	//Tile* m_pNeighbours[4];
-
 	std::vector<Tile*> m_pNeighbours;
+	Heuristic m_heuristic;
 };
 
 

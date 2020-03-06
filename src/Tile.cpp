@@ -7,7 +7,7 @@
 Tile::Tile(glm::vec2 position, glm::vec2 gridPosition, int value):
 	m_gridPosition(gridPosition)
 {
-	val = value;
+	setTileValue(value);
 
 	switch (value)
 	{
@@ -76,6 +76,9 @@ Tile::Tile(glm::vec2 position, glm::vec2 gridPosition, int value):
 
 	glm::vec2 valueLabelPosition = glm::vec2(getPosition().x, getPosition().y + 10);
 	m_pValueLabel = new Label(labelstring, "Consolas", 12, black, valueLabelPosition, true);
+
+	m_pNeighbours = { nullptr, nullptr, nullptr, nullptr };
+	m_heuristic = MANHATTAN;
 }
 
 Tile::~Tile()
@@ -185,17 +188,46 @@ TileState Tile::getTileState()
 	return m_tileState;
 }
 
-void Tile::setTargetDistance(glm::vec2 goalLocation)
+void Tile::setTargetDistance(const glm::vec2 goalLocation)
 {
-		m_goalLocation = goalLocation;
+	m_goalLocation = goalLocation;
 
-		m_tileValue = Util::distance(getPosition(), goalLocation) * 0.1;
+	// declare heuristic;
+	auto h = 0.0f;
 
-		std::ostringstream tempLabel;
-		tempLabel << std::fixed << std::setprecision(1) << m_tileValue;
-		std::string labelstring = tempLabel.str();
-		m_pValueLabel->setText(labelstring);
-	
+	// manhattan nudge
+	const auto manhattanOffset = Util::min(abs(getGridPosition().x - goalLocation.x),
+													abs(getGridPosition().y - goalLocation.y)) * 0.1f;
+
+	// euclidean nudge
+	const auto euclideanOffset = Util::distance(getGridPosition(), goalLocation) * 0.1f;
+
+	// overall nudge for tie breaking
+	const auto offset = Util::min(manhattanOffset, euclideanOffset);
+
+	switch (m_heuristic)
+	{
+	case EUCLIDEAN:
+		//euclidean distance heuristic
+		h = Util::distance(getGridPosition(), goalLocation);
+		break;
+	case MANHATTAN:
+		//manhattan distance heuristic
+		h = abs(getGridPosition().x - goalLocation.x) +
+			abs(getGridPosition().y - goalLocation.y);
+		break;
+	default:
+		break;
+	}
+
+	const float g = Config::TILE_COST;
+
+	m_tileValue = g + h + offset;
+
+	std::ostringstream tempLabel;
+	tempLabel << std::fixed << std::setprecision(1) << m_tileValue;
+	const auto labelstring = tempLabel.str();
+	m_pValueLabel->setText(labelstring);
 }
 
 glm::vec2 Tile::getGridPosition()
@@ -208,10 +240,99 @@ float Tile::getTileValue()
 	return m_tileValue;
 }
 
+void Tile::setTileValue(const float new_value)
+{
+	m_tileValue = new_value;
+}
+
 void Tile::setTileStateLabel(std::string closedOpen)
 {
 	m_pClosedOpenLabel->setText(closedOpen);
 
 	SDL_Color blue = { 0, 0, 255, 255 };
 	m_pClosedOpenLabel->setColour(blue);
+}
+std::vector<Tile*> Tile::getNeighbours() const
+{
+	return m_pNeighbours;
+}
+
+void Tile::setHeuristic(const Heuristic heuristic)
+{
+	m_heuristic = heuristic;
+}
+
+void Tile::displayTile()
+{
+	std::cout << "+------------------------------->" << std::endl;
+	std::cout << "+-                             ->" << std::endl;
+
+	if (up() != nullptr)
+	{
+		if (up()->getTileState() != IMPASSABLE)
+		{
+			std::cout << "+-         U: " << up()->getTileValue() << "             ->" << std::endl;
+		}
+		else
+		{
+			std::cout << "+-         U: mine             ->" << std::endl;
+		}
+	}
+	else
+	{
+		std::cout << "+-         U: nptr             ->" << std::endl;
+	}
+
+	if (left() != nullptr)
+	{
+		if (left()->getTileState() != IMPASSABLE)
+		{
+			std::cout << "+- L: " << left()->getTileValue();
+		}
+		else
+		{
+			std::cout << "+- L: mine";
+		}
+	}
+	else
+	{
+		std::cout << "+- L: nptr";
+	}
+
+	std::cout << " T: " << getTileValue();
+
+	if (right() != nullptr)
+	{
+		if (right()->getTileState() != IMPASSABLE)
+		{
+			std::cout << " R: " << right()->getTileValue() << "     ->" << std::endl;
+		}
+		else
+		{
+			std::cout << " R: mine    ->" << std::endl;
+		}
+	}
+	else
+	{
+		std::cout << " R: nptr    ->" << std::endl;
+	}
+
+	if (down() != nullptr)
+	{
+		if (down()->getTileState() != IMPASSABLE)
+		{
+			std::cout << "+-         D: " << down()->getTileValue() << "             ->" << std::endl;
+		}
+		else
+		{
+			std::cout << "+-         D: mine             ->" << std::endl;
+		}
+	}
+	else
+	{
+		std::cout << "+-         D: nptr             ->" << std::endl;
+	}
+
+	std::cout << "+-                             ->" << std::endl;
+	std::cout << "+------------------------------->" << std::endl;
 }

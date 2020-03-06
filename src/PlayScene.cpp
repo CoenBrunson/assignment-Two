@@ -6,6 +6,7 @@
 #include "TileComparators.h"
 #include <iomanip>
 #include "Util.h"
+#include "TileState.h"
 
 // Pathfinding & Steering functions ***********************************************
 
@@ -52,11 +53,51 @@ void PlayScene::m_buildGrid()
 	{
 		for (int a = 0; a < Config::COL_NUM; a++)
 		{
-			auto tile = new Tile(glm::vec2(offset + (size * a), offset + (size * i)), glm::vec2(a, i), /*valArray[i][a]*/);
+			auto tile = new Tile(glm::vec2(offset + (size * a), offset + (size * i)), glm::vec2(a, i), valArray[i][a]);
 			addChild(tile);
 			tile->setTileState(UNDEFINED);
 			tileGrid.push_back(tile);
 		}
+	}
+}
+
+void PlayScene::m_resetImpassableTiles()
+{
+	for (auto tile : tileGrid)
+	{
+		if (tile->getTileState() == IMPASSABLE)
+		{
+			tile->setTileState(UNVISITED);
+		}
+	}
+}
+
+void PlayScene::m_resetGrid()
+{
+	for (auto tile : m_openList)
+	{
+		tile->setTileState(UNVISITED);
+		m_openList.pop_back();
+	}
+
+	for (auto tile : m_closedList)
+	{
+		tile->setTileState(UNVISITED);
+		m_closedList.pop_back();
+	}
+}
+
+void PlayScene::m_mapTiles()
+{
+	for (auto tile : tileGrid)
+	{
+		const auto x = tile->getGridPosition().x;
+		const auto y = tile->getGridPosition().y;
+
+		if (y != 0) { tile->setUp(tileGrid[x + ((y - 1) * Config::COL_NUM)]); }
+		if (x != Config::COL_NUM - 1) { tile->setRight(tileGrid[(x + 1) + (y * Config::COL_NUM)]); }
+		if (y != Config::ROW_NUM - 1) { tile->setDown(tileGrid[x + ((y + 1) * Config::COL_NUM)]); }
+		if (x != 0) { tile->setLeft(tileGrid[(x - 1) + (y * Config::COL_NUM)]); }
 	}
 }
 
@@ -246,11 +287,6 @@ void PlayScene::start()
 	m_ship = new Ship();
 
 	addChild(m_ship);
-
-	m_pPlanet = new Planet();
-	m_spawnObject(m_pPlanet);
-	addChild(m_pPlanet);
-
 	m_spawnObject(m_ship);
 }
 
@@ -280,23 +316,138 @@ void PlayScene::m_spawnShip()
 	tileGrid[randTileIndex]->setTileState(START);
 }
 
-void PlayScene::m_spawnPlanet()
-{
-	auto randTileIndex = m_spawnObject(m_pPlanet);
-	tileGrid[randTileIndex]->setTileState(GOAL);
-	computeTileVals();
-}
-
 void PlayScene::computeTileVals()
 {
 	for (auto tile : tileGrid)
 	{
-		if (tile->val == 0) {
-			tile->setTargetDistance(m_pPlanet->getPosition());
+		if (tile->getTileValue() == 0) {
+			tile->setHeuristic(m_heuristic);
+			//we will get target position as the position of the exit tile
+			//tile->setTargetDistance(m_pPlanet->getPosition());
 		}
-		else if (tile->val == 1)
+		else if (tile->getTileValue() == 1)
 			tile->setTargetDistance(glm::vec2(10000, 10000));
 	}
+}
+
+Tile* PlayScene::m_findLowestCostTile(Tile* current_tile)
+{
+	Tile* minTile = nullptr;
+	auto min = INFINITY;
+	int tile_num = 0;
+
+	std::vector<Tile*> adjacent = current_tile->getNeighbours();
+
+	std::cout << "+-- New Tile ------------------->" << std::endl;
+	std::cout << "+-                             ->" << std::endl;
+
+	current_tile->displayTile();
+
+	std::cout << "+-- Selecting Minimum Tile ----->" << std::endl;
+	std::cout << "+------------------------------->" << std::endl;
+
+	for (int i = 0; i < 4; ++i)
+	{
+		if (adjacent[i] != nullptr)
+		{
+			if (adjacent[i]->getTileState() == GOAL)
+			{
+				minTile = adjacent[i];
+				return minTile;
+			}
+
+			if (adjacent[i]->getTileState() == UNVISITED)
+			{
+				if (min > adjacent[i]->getTileValue())
+				{
+					min = adjacent[i]->getTileValue();
+					minTile = adjacent[i];
+
+					if (minTile->getTileState() == GOAL)
+					{
+						return minTile;
+					}
+				}
+			}
+		}
+	}
+
+	if (min == INFINITY)
+	{
+		std::cout << "+-- No Min Found ---- Return --->" << std::endl;
+		std::cout << "+------------------------------->" << std::endl;
+		current_tile->setTileState(NO_PATH);
+		return current_tile;
+	}
+
+	std::cout << "+------------------------------->" << std::endl;
+	std::cout << "+- Minimum value is: " << min << " ------>" << std::endl;
+	std::cout << "+------------------------------->" << std::endl;
+	std::cout << "+- Marking Tiles --------------->" << std::endl;
+	std::cout << "+------------------------------->" << std::endl;
+
+	for (int i = 0; i < 4; ++i)
+	{
+		if ((adjacent[i] != nullptr) && (adjacent[i]->getTileState() != IMPASSABLE))
+		{
+			if (minTile == adjacent[i])
+			{
+				adjacent[i]->setTileState(OPEN);
+				m_openList.push_back(adjacent[i]);
+			}
+			else
+			{
+				if (adjacent[i]->getTileState() == UNVISITED)
+				{
+					adjacent[i]->setTileState(CLOSED);
+					m_closedList.push_back(adjacent[i]);
+				}
+
+			}
+		}
+	}
+
+	return minTile;
+}
+
+void PlayScene::m_findShortestPath(Tile* start_tile)
+{
+	auto pathLength = 0;
+
+	while (start_tile->getTileState() != GOAL)
+	{
+		start_tile = m_findLowestCostTile(start_tile);
+		if (start_tile->getTileState() == NO_PATH)
+		{
+			std::cout << "Dead end - find another path" << std::endl;
+			m_resetGrid();
+			m_findShortestPath(start_tile);
+			//std::cout << "No Path found" << std::endl;
+			break;
+		}
+
+		if (pathLength > Config::COL_NUM + Config::ROW_NUM)
+		{
+			std::cout << "No Path found" << std::endl;
+			break;
+		}
+		pathLength++;
+	}
+	std::cout << "Path Length: " << pathLength << std::endl;
+}
+
+void PlayScene::m_selectHeuristic(Heuristic heuristic)
+{
+	// recalculate grid
+	m_heuristic = heuristic;
+	auto start = m_ship->getTile();
+	//get exit tile as goal
+	//auto goal = m_pPlanet->getTile();
+	m_resetGrid();
+	computeTileVals();
+	start->setTileState(START);
+	/*exit tile*/goal->setTileState(GOAL);
+	m_findShortestPath(m_ship->getTile());
 }
 
 PlayScene::PlayScene()
@@ -320,7 +471,6 @@ void PlayScene::draw()
 		}
 	}
 
-	m_pPlanet->draw();
 	m_ship->draw();
 
 	// ImGui Rendering section - DO NOT MOVE OR DELETE
@@ -404,7 +554,6 @@ void PlayScene::handleEvents()
 				m_spawnShip();
 				break;
 			case SDLK_p:
-				m_spawnPlanet();
 				break;
 			case SDLK_r:
 				m_resetAll();

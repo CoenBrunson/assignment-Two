@@ -19,8 +19,8 @@ public:
 	virtual void update() override;
 	virtual void clean() override;
 
-	void setText(std::string newText);
-	void setColour(SDL_Color newColour);
+	void setText(const std::string& new_text);
+	void setColour(SDL_Color newColour) const;
 	void setSize(int newSize);
 
 private:

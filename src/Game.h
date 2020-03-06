@@ -6,10 +6,9 @@
 #include <iostream>
 #include <vector>
 #include <string>
+#include "SceneState.h"
 
 #include <SDL.h>
-#include <SDL_image.h>
-#include <SDL_ttf.h>
 
 // IMGUI Includes
 #include "IMGUI/imgui.h"
@@ -17,9 +16,7 @@
 
 // Game Managers
 #include "Config.h"
-#include "TextureManager.h"
 #include "CollisionManager.h"
-#include "Util.h"
 
 // Scenes
 #include "StartScene.h"
@@ -48,20 +45,20 @@ public:
 	bool init(const char* title, int xpos, int ypos, int width, int height, bool fullscreen);
 
 	// public functions
-	void render();
-	void update();
+	void render() const;
+	void update() const;
 	void handleEvents();
-	void clean();
+	void clean() const;
 
 	// a function to access the private running variable
 	bool running() { return m_bRunning; }
 
 	// getters
-	SDL_Renderer* getRenderer();
-	glm::vec2 getMousePosition();
+	SDL_Renderer* getRenderer() const;
+	glm::vec2 getMousePosition() const;
 
 	void setFrames(Uint32 frames);
-	Uint32 getFrames();
+	Uint32 getFrames() const;
 
 	void changeSceneState(SceneState newState);
 	void quit();
@@ -70,8 +67,9 @@ private:
 	Game();
 	~Game();
 
-	SDL_Window* m_pWindow;
-	SDL_Renderer* m_pRenderer;
+	std::shared_ptr<SDL_Window> m_pWindow;
+
+	std::shared_ptr<SDL_Renderer> m_pRenderer;
 
 	int m_currentFrame;
 

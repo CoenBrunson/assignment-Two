@@ -7,7 +7,7 @@
 // Game Objects
 #include "ship.h"
 #include "Tile.h"
-#include "Planet.h"
+#include "Heuristic.h"
 
 #include <memory>
 #include<vector>
@@ -29,18 +29,23 @@ private:
 	Ship* m_ship;
 	void m_spawnShip();
 
-	Planet* m_pPlanet;
-	void m_spawnPlanet();
-
 	SDL_Texture* backGround;
 
 	//Tile/grid members
 	std::vector<Tile*> tileGrid;
 
 	void m_buildGrid();
-
 	void computeTileVals();
+	void m_resetImpassableTiles();
+	void m_resetGrid();
+	void m_mapTiles();
 
+	Tile* m_findLowestCostTile(Tile* current_tile);
+	void m_findShortestPath(Tile* start_tile);
+	std::vector<Tile*> m_openList;
+	std::vector<Tile*> m_closedList;
+	Heuristic m_heuristic;
+	void m_selectHeuristic(Heuristic heuristic);
 
 	glm::vec2 m_mousePosition;
 
@@ -57,7 +62,6 @@ private:
 	void m_resetAll();
 
 	int m_spawnObject(PFDispObj* obj);
-
 	int valArray[Config::ROW_NUM][Config::COL_NUM];
 };
 

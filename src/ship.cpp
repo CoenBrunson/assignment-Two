@@ -20,7 +20,7 @@ Ship::Ship() :
 	setAcceleration(glm::vec2(0.0f, 0.0f));
 	setIsColliding(false);
 	setType(GameObjectType::SHIP);
-	setState(State::IDLE);
+	setSteeringState(SteeringState::IDLE);
 }
 
 
@@ -41,18 +41,18 @@ void Ship::m_checkState()
 {
 	switch (getState())
 	{
-	case State::IDLE:
+	case SteeringState::IDLE:
 		move();
 		break;
-	case State::SEEK:
+	case SteeringState::SEEK:
 		m_seek();
 		//move();
 		break;
-	case State::ARRIVE:
+	case SteeringState::ARRIVE:
 		break;
-	case State::AVOID:
+	case SteeringState::AVOID:
 		break;
-	case State::FLEE:
+	case SteeringState::FLEE:
 		break;
 	}
 }
