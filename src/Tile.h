@@ -21,25 +21,6 @@ enum TileState {
 	NUM_OF_TILE_STATES
 };
 
-enum TileType {
-	FLOOR,
-	RIGHT_DOOR,
-	LEFT_DOOR,
-	TOP_LEFT_OUT,
-	TOP_LEFT_IN,
-	LEFT_WALL,
-	BOTTOM_LEFT_OUT,
-	BOTTOM_LEFT_IN,
-	BOTTOM_WALL,
-	BOTTOM_RIGHT_IN,
-	BOTTOM_RIGHT_OUT,
-	RIGHT_WALL,
-	TOP_RIGHT_IN,
-	TOP_RIGHT_OUT,
-	TOP_WALL,
-	NUM_OF_TILE_TYPES
-};
-
 enum TileNeighbour
 {
 	UP,
@@ -85,7 +66,7 @@ public:
 
 	void setTileStateLabel(std::string closedOpen);
 
-	int val;
+	int m_val;
 
 private:
 	float m_cost = Config::TILE_COST;

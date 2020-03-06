@@ -7,58 +7,82 @@
 Tile::Tile(glm::vec2 position, glm::vec2 gridPosition, int value):
 	m_gridPosition(gridPosition)
 {
-	val = value;
+	m_val = value;
 
 	switch (value)
 	{
-	case FLOOR:
-		TheTextureManager::Instance()->load("../Assets/textures/tileOne.png",
+	case 0:
+		setTileState(UNDEFINED);
+		TheTextureManager::Instance()->load("../Assets/textures/Floor.png",
 			"thisTile", TheGame::Instance()->getRenderer());
 		break;
-	case TOP_LEFT_IN:
-		TheTextureManager::Instance()->load("../Assets/textures/tileTwo.png",
+	case 1:
+		setTileState(IMPASSABLE);
+		TheTextureManager::Instance()->load("../Assets/textures/TopLeftIn.png",
 			"thisTile", TheGame::Instance()->getRenderer());
 		break;
-	case TOP_LEFT_OUT:
-		TheTextureManager::Instance()->load("../Assets/textures/tileThree.png",
+	case 2:
+		setTileState(IMPASSABLE);
+		TheTextureManager::Instance()->load("../Assets/textures/TopLeftOut.png",
 			"thisTile", TheGame::Instance()->getRenderer());
 		break;
-	case LEFT_WALL:
-		TheTextureManager::Instance()->load("../Assets/textures/tileFour.png",
+	case 3:
+		setTileState(IMPASSABLE);
+		TheTextureManager::Instance()->load("../Assets/textures/LeftWall.png",
 			"thisTile", TheGame::Instance()->getRenderer());
 		break;
-	case BOTTOM_LEFT_IN:
-		TheTextureManager::Instance()->load("../Assets/textures/tileFive.png",
+	case 4:
+		setTileState(IMPASSABLE);
+		TheTextureManager::Instance()->load("../Assets/textures/BotleftIn.png",
 			"thisTile", TheGame::Instance()->getRenderer());
 		break;
-	case BOTTOM_LEFT_OUT:
-		TheTextureManager::Instance()->load("../Assets/textures/tileSix.png",
+	case 5:
+		setTileState(IMPASSABLE);
+		TheTextureManager::Instance()->load("../Assets/textures/BotLeftOut.png",
 			"thisTile", TheGame::Instance()->getRenderer());
 		break;
-	case BOTTOM_WALL:
-		TheTextureManager::Instance()->load("../Assets/textures/tileSeven.png",
+	case 6:
+		setTileState(IMPASSABLE);
+		TheTextureManager::Instance()->load("../Assets/textures/BotWall.png",
 			"thisTile", TheGame::Instance()->getRenderer());
 		break;
-	case BOTTOM_RIGHT_IN:
-		TheTextureManager::Instance()->load("../Assets/textures/tileEight.png",
+	case 7:
+		setTileState(IMPASSABLE);
+		TheTextureManager::Instance()->load("../Assets/textures/BotRightIn.png",
 			"thisTile", TheGame::Instance()->getRenderer());
 		break;
-	case RIGHT_WALL:
-		TheTextureManager::Instance()->load("../Assets/textures/tileNine.png",
+	case 8:
+		setTileState(IMPASSABLE);
+		TheTextureManager::Instance()->load("../Assets/textures/BotRightOut.png",
 			"thisTile", TheGame::Instance()->getRenderer());
 		break;
-	case TOP_RIGHT_IN:
-		TheTextureManager::Instance()->load("../Assets/textures/tileTen.png",
+	case 9:
+		setTileState(IMPASSABLE);
+		TheTextureManager::Instance()->load("../Assets/textures/RightWall.png",
 			"thisTile", TheGame::Instance()->getRenderer());
 		break;
-	case TOP_RIGHT_OUT:
-		TheTextureManager::Instance()->load("../Assets/textures/tileEleven.png",
+	case 10:
+		setTileState(IMPASSABLE);
+		TheTextureManager::Instance()->load("../Assets/textures/TopRightIn.png",
 			"thisTile", TheGame::Instance()->getRenderer());
 		break;
-	case TOP_WALL:
-		TheTextureManager::Instance()->load("../Assets/textures/tileTwelve.png",
+	case 11:
+		setTileState(IMPASSABLE);
+		TheTextureManager::Instance()->load("../Assets/textures/TopRightOut.png",
 			"thisTile", TheGame::Instance()->getRenderer());
 		break;
+	case 12:
+		setTileState(IMPASSABLE);
+		TheTextureManager::Instance()->load("../Assets/textures/TopWall.png",
+			"thisTile", TheGame::Instance()->getRenderer());
+	case 13:
+		setTileState(START);
+		TheTextureManager::Instance()->load("../Assets/textures/LeftDoor.png",
+			"thisTile", TheGame::Instance()->getRenderer());
+	case 14:
+		setTileState(GOAL);
+		TheTextureManager::Instance()->load("../Assets/textures/RightDoor.png",
+			"thisTile", TheGame::Instance()->getRenderer());
 	}
 
 	glm::vec2 size = glm::vec2(Config::TILE_SIZE, Config::TILE_SIZE);

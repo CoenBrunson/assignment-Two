@@ -37,6 +37,15 @@ private:
 	//Tile/grid members
 	std::vector<Tile*> tileGrid;
 
+	void generateMaze();
+
+	void generateFirstPath();
+
+	void generateMaze();
+
+	void findNext();
+	int thisX, thisY, nextX, nextY;
+
 	void m_buildGrid();
 
 	void computeTileVals();
@@ -58,7 +67,12 @@ private:
 
 	int m_spawnObject(PFDispObj* obj);
 
-	int valArray[Config::ROW_NUM][Config::COL_NUM];
+	int valArray[Config::COL_NUM][Config::ROW_NUM];
+	const int xSize = Config::COL_NUM;
+	const int ySize = Config::ROW_NUM;
+	int pathLength = 0;
+
+	void generateSmallPaths();
 };
 
 #endif /* defined (__PLAY_SCENE__) */

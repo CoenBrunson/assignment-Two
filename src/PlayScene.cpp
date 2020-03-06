@@ -38,6 +38,120 @@ generatePath()
 	hold values
 */
 
+void PlayScene::generateMaze()
+{
+	auto tempY = rand() % ySize;
+	valArray[tempY][0] = 13;
+	valArray[0][0] = 1;
+	valArray[0][xSize] = 10;
+	valArray[ySize][0] = 4;
+	valArray[ySize][xSize] = 7;
+
+	for (int i = 0; i < ySize; i++)
+	{
+		if (valArray[i][0] == NULL)
+			valArray[i][0] == 3;
+		if (valArray[i][xSize] == NULL)
+			valArray[i][0] == 9;
+	}
+
+	for (int j = 0; j < xSize; j++)
+	{
+		if (valArray[0][j] == NULL)
+			valArray[0][j] == 12;
+		if (valArray[ySize][j] == NULL)
+			valArray[ySize][j] == 6;
+	}
+	
+	generateFirstPath();
+
+}
+
+void PlayScene::findNext()
+{
+	bool validSpot = false;
+
+	do
+	{
+		int nextSpot = rand() % 4;
+		switch (nextSpot) {
+		case 0:
+			nextX = thisX - 1;
+			nextY = thisY;
+		case 1:
+			nextX = thisX;
+			nextY = thisY - 1;
+		case 2:
+			nextX = thisX + 1;
+			nextY = thisY;
+		case 3:
+			nextX = thisX;
+			nextY = thisY + 1;
+		}
+
+		if (nextX > 0 || nextY > 0 || nextX < xSize || nextY < ySize)
+		{
+			if (valArray[nextY][nextX] != valArray[thisY][thisX])
+			{
+				validSpot = true;
+			}
+		};
+	} while (validSpot = false);
+}
+
+
+void PlayScene::generateFirstPath()
+{
+	thisX = 0;
+	for (int i = 0; i < ySize; i++)
+	{
+		if (valArray[i][0] == 13)
+		{
+			thisY = i;
+		}
+	}
+
+	bool pathCreating = true;
+
+	do
+	{
+		findNext();
+		if (valArray[nextY][nextX] == NULL)
+		{
+			thisX = nextX;
+			thisY = nextY;
+			valArray[thisY][thisX] = 0;
+			pathLength++;
+		}
+		else if (valArray[nextY][nextX] != NULL)
+		{
+			if (pathLength >= 16) {
+				valArray[nextY][nextX] = 14;
+				pathCreating = false;
+			}
+		}
+
+	} while (pathCreating);
+}
+
+
+void PlayScene::generateSmallPaths()
+{
+	bool pathCreating = true;
+
+	do
+	{
+		findNext();
+		if (valArray[nextY][nextX] == NULL)
+		{
+			thisX = nextX;
+			thisY = nextY;
+			valArray[thisY][thisX] = 0;
+			pathLength++;
+		}
+
+	} while (pathCreating);
+}
 
 void PlayScene::m_buildGrid()
 {
@@ -291,10 +405,10 @@ void PlayScene::computeTileVals()
 {
 	for (auto tile : tileGrid)
 	{
-		if (tile->val == 0) {
+		if (tile->m_val == 0) {
 			tile->setTargetDistance(m_pPlanet->getPosition());
 		}
-		else if (tile->val == 1)
+		else if (tile->m_val == 1)
 			tile->setTargetDistance(glm::vec2(10000, 10000));
 	}
 }
