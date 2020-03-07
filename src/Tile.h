@@ -1,6 +1,6 @@
 #pragma once
-#ifndef __Tile__
-#define __Tile__
+#ifndef __TILE__
+#define __TILE__
 
 #include <vector>
 
@@ -10,63 +10,26 @@
 #include "Label.h"
 #include "Scene.h"
 
-enum TileState {
-	OPEN,
-	CLOSED,
-	START,
-	GOAL,
-	UNDEFINED,
-	UNVISITED,
-	IMPASSABLE,
-	NUM_OF_TILE_STATES
-};
+#include "TileState.h"
+#include "TileNeighbour.h"
+#include "Heuristic.h"
 
-enum TileType {
-	FLOOR,
-	RIGHT_DOOR,
-	LEFT_DOOR,
-	TOP_LEFT_OUT,
-	TOP_LEFT_IN,
-	LEFT_WALL,
-	BOTTOM_LEFT_OUT,
-	BOTTOM_LEFT_IN,
-	BOTTOM_WALL,
-	BOTTOM_RIGHT_IN,
-	BOTTOM_RIGHT_OUT,
-	RIGHT_WALL,
-	TOP_RIGHT_IN,
-	TOP_RIGHT_OUT,
-	TOP_WALL,
-	NUM_OF_TILE_TYPES
-};
-
-enum TileNeighbour
-{
-	UP,
-	RIGHT,
-	DOWN,
-	LEFT,
-	NUM_OF_NEIGHBOURS
-};
-
-class Tile : public DisplayObject
+class Tile final : public DisplayObject
 {
 public:
-	Tile(glm::vec2 position = glm::vec2(), glm::vec2 gridPosition = glm::vec2(), int value = 0);
+	Tile(glm::vec2 world_position = glm::vec2(), glm::vec2 grid_position = glm::vec2());
 	~Tile();
 
 	// Inherited via GameObject
 	virtual void draw() override;
-
 	virtual void update() override;
-
 	virtual void clean() override;
 
 	// get neighbours
-	Tile* up();
-	Tile* down();
-	Tile* right();
-	Tile* left();
+	Tile* getUp();
+	Tile* getDown();
+	Tile* getRight();
+	Tile* getLeft();
 
 	// set neighbours
 	void setUp(Tile* tile);
@@ -75,17 +38,22 @@ public:
 	void setLeft(Tile* tile);
 
 	void setTileState(TileState state);
-	TileState getTileState();
+	TileState getTileState() const;
 
-	void setTargetDistance(glm::vec2 goalLocation);
+	void setTargetDistance(glm::vec2 goal_location);
 
-	glm::vec2 getGridPosition();
+	glm::vec2 getGridPosition() const;
 
-	float getTileValue();
+	float getTileValue() const;
+	void setTileValue(float new_value);
 
-	void setTileStateLabel(std::string closedOpen);
+	void setTileStateLabel(const std::string& closed_open) const;
 
-	int val;
+	std::vector<Tile*> getNeighbours() const;
+
+	void setHeuristic(Heuristic heuristic);
+
+	void displayTile();
 
 private:
 	float m_cost = Config::TILE_COST;
@@ -93,15 +61,15 @@ private:
 	float m_tileValue = 0.0f;
 	TileState m_tileState;
 	glm::vec2 m_gridPosition;
+
+	// labels
 	Label* m_pValueLabel;
 	Label* m_pClosedOpenLabel;
 
 	glm::vec2 m_goalLocation;
-
-	//Tile* m_pNeighbours[4];
-
 	std::vector<Tile*> m_pNeighbours;
+	Heuristic m_heuristic;
 };
 
 
-#endif /* defined (__Tile__) */
+#endif /* defined (__TILE__) */

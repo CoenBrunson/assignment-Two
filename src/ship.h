@@ -1,16 +1,11 @@
 #pragma once
-#ifndef __Ship__
-#define __Ship__
+#ifndef __SHIP__
+#define __SHIP__
 
-#include <vector>
+#include "PathFindingDisplayObject.h"
 #include "TextureManager.h"
-#include "SoundManager.h"
-#include "Tile.h"
-#include "Scene.h"
-#include "PFDispObj.h"
 
-class Ship :
-	public PFDispObj
+class Ship final : public PathFindingDisplayObject
 {
 public:
 	Ship();
@@ -18,20 +13,15 @@ public:
 
 	// Inherited via GameObject
 	void draw() override;
-
 	void update() override;
-
 	void clean() override;
 
 	void turnRight();
 	void turnLeft();
 	void move();
 
-	// pathfinding behaviours
-
-
 	glm::vec2 getTarget();
-	void setTarget(glm::vec2 position);
+	void setTarget();
 private:
 
 
@@ -42,14 +32,14 @@ private:
 
 	// steering behaviours
 	void m_seek();
+	glm::vec2 m_findNextPathSpot();
 	float m_maxSpeed;
 	double m_currentDirection;
 	float m_turnSpeed;
 	float m_steerForce;
 	glm::vec2 m_target;
-
 };
 
 
-#endif /* defined (__Ship__) */
+#endif /* defined (__SHIP__) */
 

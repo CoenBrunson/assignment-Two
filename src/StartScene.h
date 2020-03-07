@@ -6,7 +6,7 @@
 #include "Label.h"
 #include "ship.h"
 
-class StartScene : public Scene
+class StartScene final : public Scene
 {
 public:
 	StartScene();
@@ -20,12 +20,10 @@ public:
 	virtual void start() override;
 
 private:
-	Label* m_pStartLabel;
-	Label* m_pInstructionsLabel;
+	Label* m_pStartLabel{};
+	Label* m_pInstructionsLabel{};
 
-	Ship* m_pShip;
-
-	int m_recurse(int x, int i, int a);
+	Ship* m_pShip{};
 };
 
 #endif /* defined (__START_SCENE__) */

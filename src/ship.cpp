@@ -1,9 +1,8 @@
 #include "ship.h"
 #include "Game.h"
 #include "Util.h"
-#include "GLM/gtx/rotate_vector.hpp"
 #include "PlayScene.h"
-#include "GLM/gtx/string_cast.hpp"
+#include "glm/gtx/string_cast.hpp"
 
 
 Ship::Ship() :
@@ -12,26 +11,25 @@ Ship::Ship() :
 	TheTextureManager::Instance()->load("../Assets/textures/ship3.png",
 		"ship", TheGame::Instance()->getRenderer());
 
-	glm::vec2 size = TheTextureManager::Instance()->getTextureSize("ship");
+	auto size = TheTextureManager::Instance()->getTextureSize("ship");
 	setWidth(size.x);
 	setHeight(size.y);
 	setPosition(glm::vec2(400.0f, 300.0f));
 	setVelocity(glm::vec2(0.0f, 0.0f));
 	setAcceleration(glm::vec2(0.0f, 0.0f));
 	setIsColliding(false);
-	setType(GameObjectType::SHIP);
-	setState(State::IDLE);
+	setType(SHIP);
+	setState(SEEK);
 }
 
 
 Ship::~Ship()
-{
-}
+= default;
 
 void Ship::draw()
 {
-	int xComponent = getPosition().x;
-	int yComponent = getPosition().y;
+	const int xComponent = getPosition().x;
+	const int yComponent = getPosition().y;
 
 	TheTextureManager::Instance()->draw("ship", xComponent, yComponent,
 		TheGame::Instance()->getRenderer(), m_currentDirection, 255, true);
@@ -41,18 +39,21 @@ void Ship::m_checkState()
 {
 	switch (getState())
 	{
-	case State::IDLE:
+	case IDLE:
 		move();
 		break;
-	case State::SEEK:
+	case SEEK:
 		m_seek();
-		//move();
+		move();
 		break;
-	case State::ARRIVE:
+	case ARRIVE:
 		break;
-	case State::AVOID:
+	case AVOID:
 		break;
-	case State::FLEE:
+	case FLEE:
+		break;
+	default:
+		std::cout << "unknown or unused case" << std::endl;
 		break;
 	}
 }
@@ -64,7 +65,6 @@ void Ship::update()
 
 void Ship::clean()
 {
-
 }
 
 void Ship::turnRight()
@@ -88,12 +88,15 @@ void Ship::turnLeft()
 
 void Ship::move()
 {
+	setTarget();
+	getTarget();
+
 	if (Util::distance(getPosition(), m_target) > 1.0f) {
-		glm::vec2 desired = Util::normalize(m_target - getPosition()) * m_maxSpeed;
+		const glm::vec2 desired = Util::normalize(m_target - getPosition()) * m_maxSpeed;
 		setVelocity(desired);
 
 
-		glm::vec2 newPosition = getPosition() + getVelocity();
+		const glm::vec2 newPosition = getPosition() + getVelocity();
 		setPosition(newPosition);
 	}
 	
@@ -105,9 +108,9 @@ glm::vec2 Ship::getTarget()
 	return m_target;
 }
 
-void Ship::setTarget(glm::vec2 position)
+void Ship::setTarget()
 {
-	m_target = position;
+	m_target = m_findNextPathSpot();
 }
 
 
@@ -139,17 +142,40 @@ void Ship::m_checkBounds()
 void Ship::m_reset()
 {
 	setIsColliding(false);
-	int halfWidth = getWidth() * 0.5;
-	int xComponent = rand() % (640 - getWidth()) + halfWidth + 1;
-	int yComponent = -getHeight();
+	const int halfWidth = getWidth() * 0.5f;
+	const auto xComponent = rand() % (640 - getWidth()) + halfWidth + 1;
+	const auto yComponent = -getHeight();
 	setPosition(glm::vec2(xComponent, yComponent));
 }
 
 void Ship::m_seek()
 {
-	glm::vec2 desired = Util::normalize(m_target - getPosition()) * m_maxSpeed;
-	glm::vec2 steer = (desired - getVelocity());
+
+	const auto desired = Util::normalize(m_target - getPosition()) * m_maxSpeed;
+	auto steer = (desired - getVelocity());
 
 	steer = Util::limitMagnitude(steer, m_steerForce);
 	setAcceleration(steer);
+}
+
+glm::vec2 Ship::m_findNextPathSpot()
+{
+	Tile* nextTile = nullptr;
+	int tile_num = 0;
+
+	std::vector<Tile*> adjacent = getTile()->getNeighbours();
+
+	for (int i = 0; i < 4; ++i)
+	{
+		if (adjacent[i] != nullptr)
+		{
+			if (adjacent[i]->getTileState() == OPEN || adjacent[i]->getTileState() == GOAL)
+			{
+				nextTile = adjacent[i];
+				return nextTile->getPosition();
+				setTile(nextTile);
+			}
+		}
+	}
+
 }
