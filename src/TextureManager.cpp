@@ -318,3 +318,34 @@ void TextureManager::displayTextureMap()
 	}
 }
 
+void TextureManager::drawWarrior(const std::string& id, const int x, const int y, SDL_Renderer * renderer, const double angle, const int alpha, const bool centered, const SDL_RendererFlip flip, int direction, int frame)
+{
+	SDL_Rect srcRect;
+	SDL_Rect destRect;
+	int displaySize = 36;
+
+	srcRect.x = direction * displaySize;
+	srcRect.y = frame * displaySize;
+
+	int textureWidth, textureHeight;
+
+	SDL_QueryTexture(m_textureMap[id].get(), nullptr, nullptr, &textureWidth, &textureHeight);
+
+	srcRect.w = destRect.w = textureWidth = displaySize;
+	srcRect.h = destRect.h = textureHeight = displaySize;
+
+	if (centered) {
+		const int xOffset = textureWidth * 0.5;
+		const int yOffset = textureHeight * 0.5;
+		destRect.x = x - xOffset;
+		destRect.y = y - yOffset;
+	}
+	else {
+		destRect.x = x;
+		destRect.y = y;
+	}
+
+	SDL_SetTextureAlphaMod(m_textureMap[id].get(), alpha);
+	SDL_RenderCopyEx(renderer, m_textureMap[id].get(), &srcRect, &destRect, angle, nullptr, flip);
+}
+

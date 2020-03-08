@@ -57,6 +57,14 @@ void PlayScene::m_spawnMines()
 
 	// first pass
 	m_minePassAdjustment();
+
+	//second pass
+	m_minePassAdjustment();
+
+	//third pass
+	m_minePassAdjustment();
+
+	//just to be safe!
 }
 
 /*
@@ -273,7 +281,7 @@ Tile* PlayScene::m_findLowestCostTile(Tile* current_tile)
 
 void PlayScene::m_findShortestPath(Tile* start_tile)
 {
-	auto pathLength = 0;
+	pathLength = 0;
 
 	while(start_tile->getTileState() != GOAL)
 	{
@@ -530,6 +538,17 @@ void PlayScene::m_resetAll()
 	
 }
 
+int PlayScene::calculateParForCourse()
+{
+	int parForHole = pathLength - pathPar;
+	parForCourse += parForHole;
+
+	return parForCourse;
+
+	std::cout << "Congratulations, you scored a " << parForHole << "on this hole!" << std::endl;
+	std::cout << "Your total score is " << parForCourse << ". :)" << std::endl;
+}
+
 void PlayScene::start()
 {
 	TheTextureManager::Instance()->load("../Assets/textures/map.png",
@@ -609,8 +628,15 @@ void PlayScene::draw()
 
 void PlayScene::update()
 {
-	for (auto tile : m_pGrid)
+	const auto size = Config::TILE_SIZE;
+	const auto offset = size * 0.5f;
+	for (auto tile : m_pGrid) {
 		tile->update();
+		if (Util::distance(m_pShip->getPosition(), m_pShip->getTile()->getPosition()) < 0.1f) {
+			m_pShip->getTile()->setTileState(CLOSED);
+			setState(SEEK);
+		}
+	}
 
 	m_pShip->update();
 
@@ -618,7 +644,8 @@ void PlayScene::update()
 	{
 		m_updateUI();
 	}
-
+	if (Util::distance(glm::vec2(m_pShip->getPosition().x - offset, m_pShip->getPosition().y - offset), glm::vec2(m_pPlanet->getPosition().x - offset, m_pPlanet->getPosition().y - offset)) <= 4.5f)
+		TheGame::Instance()->changeSceneState(SceneState::END_SCENE);
 }
 
 void PlayScene::clean()
@@ -696,6 +723,7 @@ void PlayScene::handleEvents()
 				break;
 			case SDLK_f:
 				m_findShortestPath(m_pShip->getTile());
+				m_pShip->setTarget();
 				break;
 			case SDLK_e:
 				m_spawnMines();

@@ -20,8 +20,11 @@ public:
 	void turnLeft();
 	void move();
 
+	void m_checkArrival();
+
 	glm::vec2 getTarget();
 	void setTarget();
+	bool atGoal = false;
 private:
 
 
@@ -33,11 +36,20 @@ private:
 	// steering behaviours
 	void m_seek();
 	glm::vec2 m_findNextPathSpot();
+	void animate();
 	float m_maxSpeed;
 	double m_currentDirection;
 	float m_turnSpeed;
 	float m_steerForce;
 	glm::vec2 m_target;
+
+	int g_frame = 0;
+	int g_frameMax = 5; // Number of frame to display each up/down of tongue.
+	int g_sprite = 0; // Sprite counter.
+	int g_spriteMax = 5;
+	int direction = 3;
+
+	Tile* nextTile = nullptr;
 };
 
 
