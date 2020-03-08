@@ -3,7 +3,6 @@
 #define __PFDISPOBJ__
 
 #include "DisplayObject.h"
-#include "Tile.h"
 
 class PFDispObj : public DisplayObject
 {

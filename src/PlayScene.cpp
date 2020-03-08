@@ -57,6 +57,14 @@ void PlayScene::m_spawnMines()
 
 	// first pass
 	m_minePassAdjustment();
+
+	//second pass
+	m_minePassAdjustment();
+
+	//third pass
+	m_minePassAdjustment();
+
+	//just to be safe!
 }
 
 /*
@@ -273,7 +281,7 @@ Tile* PlayScene::m_findLowestCostTile(Tile* current_tile)
 
 void PlayScene::m_findShortestPath(Tile* start_tile)
 {
-	auto pathLength = 0;
+	pathLength = 0;
 
 	while(start_tile->getTileState() != GOAL)
 	{
@@ -445,26 +453,26 @@ void PlayScene::m_updateUI()
 		ImGui::Begin("About Pathfinding Simulator", &m_displayAbout, ImGuiWindowFlags_AlwaysAutoResize);
 		ImGui::Separator();
 		ImGui::Text("Authors:");
-		ImGui::Text("Tom Tsiliopoulos ");
+		ImGui::Text("primarily Tom Tsiliopoulos, but also Coen Brunson and Andrey Chizhov");
 		ImGui::End();
 	}
 
 	/*************************************************************************************************/
-	if (ImGui::Button("Respawn Ship"))
+	if (ImGui::Button("Respawn Leprechaun"))
 	{
 		m_spawnShip();
 	}
 
 	ImGui::SameLine();
 
-	if (ImGui::Button("Respawn Planet"))
+	if (ImGui::Button("Respawn Gold"))
 	{
 		m_spawnPlanet();
 	}
 
 	ImGui::SameLine();
 
-	if (ImGui::Button("Respawn Mines"))
+	if (ImGui::Button("Respawn Trees"))
 	{
 		m_spawnMines();
 	}
@@ -495,7 +503,7 @@ void PlayScene::m_updateUI()
 		ImGui::PopStyleColor();
 	}
 
-	if(ImGui::SliderInt("Number of Mines", &m_mineNum, 1, 298))
+	if(ImGui::SliderInt("Number of Trees", &m_mineNum, 1, 298))
 	{
 		m_eraseMines();
 		m_buildMines();
@@ -508,7 +516,7 @@ void PlayScene::m_updateUI()
 		{ }
 		ImGui::SameLine();
 
-		if (ImGui::Checkbox("Planet", &m_planetVisible))
+		if (ImGui::Checkbox("Gold", &m_planetVisible))
 		{
 		}
 		ImGui::SameLine();
@@ -528,6 +536,17 @@ void PlayScene::m_updateUI()
 void PlayScene::m_resetAll()
 {
 	
+}
+
+int PlayScene::calculateParForCourse()
+{
+	int parForHole = pathLength - pathPar;
+	parForCourse += parForHole;
+
+	return parForCourse;
+
+	std::cout << "Congratulations, you scored a " << parForHole << "on this hole!" << std::endl;
+	std::cout << "Your total score is " << parForCourse << ". :)" << std::endl;
 }
 
 void PlayScene::start()
@@ -609,10 +628,13 @@ void PlayScene::draw()
 
 void PlayScene::update()
 {
+	const auto size = Config::TILE_SIZE;
+	const auto offset = size * 0.5f;
 	for (auto tile : m_pGrid) {
 		tile->update();
-		if (Util::distance(m_pShip->getPosition(),tile->getPosition()) < m_pShip->getMaxSpeed() && m_pShip->getTile()!=tile) {
-			tile->setTileState(CLOSED);
+		if (Util::distance(m_pShip->getPosition(), m_pShip->getTile()->getPosition()) < 0.1f) {
+			m_pShip->getTile()->setTileState(CLOSED);
+			setState(SEEK);
 		}
 	}
 
@@ -622,7 +644,8 @@ void PlayScene::update()
 	{
 		m_updateUI();
 	}
-
+	if (Util::distance(glm::vec2(m_pShip->getPosition().x - offset, m_pShip->getPosition().y - offset), glm::vec2(m_pPlanet->getPosition().x - offset, m_pPlanet->getPosition().y - offset)) <= 10.0f)
+		TheGame::Instance()->changeSceneState(SceneState::END_SCENE);
 }
 
 void PlayScene::clean()
@@ -700,6 +723,7 @@ void PlayScene::handleEvents()
 				break;
 			case SDLK_f:
 				m_findShortestPath(m_pShip->getTile());
+				m_pShip->setTarget();
 				break;
 			case SDLK_e:
 				m_spawnMines();

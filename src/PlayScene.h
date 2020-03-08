@@ -84,6 +84,12 @@ private:
 	
 	void m_resetAll();
 
+	int pathLength;
+	int pathPar = 18;
+	int parForCourse;
+
+	int calculateParForCourse();
+
 };
 
 #endif /* defined (__PLAY_SCENE__) */

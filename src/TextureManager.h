@@ -58,6 +58,8 @@ public:
 
 	void displayTextureMap();
 
+	void drawWarrior(const std::string & id, const int x, const int y, SDL_Renderer * renderer, const double angle, const int alpha, const bool centered, const SDL_RendererFlip flip, int direction, int frame, int width, int height);
+
 private:
 
 	TextureManager();

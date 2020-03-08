@@ -5,7 +5,7 @@ DisplayObject::DisplayObject()
 
 DisplayObject::~DisplayObject()
 {
-	delete m_pParentScene;
+	//delete m_pParentScene;
 	m_pParentScene = nullptr;
 }
 
