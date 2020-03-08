@@ -109,6 +109,16 @@ void Ship::setTile(Tile* newTile)
 	m_currentTile = newTile;
 }
 
+Tile* Ship::getNextTile()
+{
+	return m_nextTile;
+}
+
+void Ship::setNextTile(Tile* newTile)
+{
+	m_nextTile = newTile;
+}
+
 void Ship::m_checkBounds()
 {
 
@@ -165,7 +175,7 @@ void Ship::m_seek()
 
 glm::vec2 Ship::m_findNextPathSpot()
 {
-	Tile* nextTile = nullptr;
+	setNextTile(nullptr);
 	int tile_num = 0;
 
 	std::vector<Tile*> adjacent = getTile()->getNeighbours();
@@ -176,9 +186,8 @@ glm::vec2 Ship::m_findNextPathSpot()
 		{
 			if (adjacent[i]->getTileState() == OPEN || adjacent[i]->getTileState() == GOAL)
 			{
-				nextTile = adjacent[i];
-				return nextTile->getPosition();
-				setTile(nextTile);
+				setNextTile(adjacent[i]);
+				return getNextTile()->getPosition();
 			}
 		}
 	}

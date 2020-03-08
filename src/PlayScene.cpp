@@ -611,8 +611,7 @@ void PlayScene::update()
 {
 	for (auto tile : m_pGrid) {
 		tile->update();
-		if (Util::distance(m_pShip->getPosition(),tile->getPosition()) < m_pShip->getMaxSpeed()) {
-			m_pShip->setTile(tile);
+		if (Util::distance(m_pShip->getPosition(),tile->getPosition()) < m_pShip->getMaxSpeed() && m_pShip->getTile()!=tile) {
 			tile->setTileState(CLOSED);
 		}
 	}

@@ -22,6 +22,8 @@ public:
 
 	Tile* getTile();
 	void setTile(Tile* newTile);
+	Tile* getNextTile();
+	void setNextTile(Tile* newTile);
 
 	glm::vec2 getTargetPosition();
 	void setTargetPosition();
@@ -49,7 +51,8 @@ private:
 	glm::vec2 m_currentDirection;
 	glm::vec2 m_targetPosition;
 	glm::vec2 m_targetDirection;
-
+	
+	Tile* m_nextTile;
 	Tile* m_currentTile;
 };
 
