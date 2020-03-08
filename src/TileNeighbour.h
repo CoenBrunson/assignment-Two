@@ -1,7 +1,6 @@
 #pragma once
 #ifndef __TILE_NEIGHBOUR__
 #define __TILE_NEIGHBOUR__
-
 enum TileNeighbour
 {
 	UP,

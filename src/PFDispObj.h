@@ -3,6 +3,7 @@
 #define __PFDISPOBJ__
 
 #include "DisplayObject.h"
+#include "Tile.h"
 
 class PFDispObj : public DisplayObject
 {
@@ -14,11 +15,12 @@ public:
 	virtual void update() override = 0;
 	virtual void clean() override = 0;
 
-	Tile* getTile() const;
+	Tile* getTile();
 	void setTile(Tile* newTile);
 
 private:
 	Tile* m_currentTile;
+
 };
 
 #endif // !__PFDISPOBJ__

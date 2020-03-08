@@ -1,16 +1,11 @@
 #pragma once
-#ifndef __Ship__
-#define __Ship__
+#ifndef __SHIP__
+#define __SHIP__
 
-#include <vector>
+#include "PathFindingDisplayObject.h"
 #include "TextureManager.h"
-#include "SoundManager.h"
-#include "Tile.h"
-#include "Scene.h"
-#include "PFDispObj.h"
 
-class Ship :
-	public PFDispObj
+class Ship final : public PathFindingDisplayObject
 {
 public:
 	Ship();
@@ -18,38 +13,46 @@ public:
 
 	// Inherited via GameObject
 	void draw() override;
-
 	void update() override;
-
 	void clean() override;
 
-	void turnRight();
-	void turnLeft();
+	/*void turnRight();
+	void turnLeft();*/
 	void move();
 
-	// pathfinding behaviours
+	Tile* getTile();
+	void setTile(Tile* newTile);
 
+	glm::vec2 getTargetPosition();
+	void setTargetPosition();
 
-	glm::vec2 getTarget();
-	void setTarget(glm::vec2 position);
+	float getMaxSpeed();
+	void setMaxSpeed(float newSpeed);
+
 private:
 
 
 	void m_checkState();
 	void m_checkBounds();
+	void applyForce(glm::vec2 force);
+	void m_computeTargetDirection();
 
 	void m_reset();
 
 	// steering behaviours
 	void m_seek();
+	glm::vec2 m_findNextPathSpot();
 	float m_maxSpeed;
-	double m_currentDirection;
-	float m_turnSpeed;
+	float m_turnRate;
 	float m_steerForce;
-	glm::vec2 m_target;
+	float m_currentHeading;
+	glm::vec2 m_currentDirection;
+	glm::vec2 m_targetPosition;
+	glm::vec2 m_targetDirection;
 
+	Tile* m_currentTile;
 };
 
 
-#endif /* defined (__Ship__) */
+#endif /* defined (__SHIP__) */
 

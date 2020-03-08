@@ -1,9 +1,7 @@
 #pragma once
 #ifndef __TILE_STATE__
 #define __TILE_STATE__
-
-enum TileState 
-{
+enum TileState {
 	NO_PATH,
 	OPEN,
 	CLOSED,
@@ -11,7 +9,6 @@ enum TileState
 	GOAL,
 	UNVISITED,
 	IMPASSABLE,
-	UNDEFINED,
 	NUM_OF_TILE_STATES
 };
 #endif /* defined (__TILE_STATE__) */

@@ -9,16 +9,18 @@
 const int FPS = 60;
 const int DELAY_TIME = 1000.0f / FPS;
 
-int main(int argc, char* args[])
+int main(int argc, char * args[])
 {
 	Uint32 frameStart, frameTime;
 	UINT32 frames = 0;
+
 
 	// show console
 	AllocConsole();
 	freopen("CON", "w", stdout);
 
-	TheGame::Instance()->init("Pathfinding Simulation", 100, 100, 800, 600, false);
+
+	TheGame::Instance()->init("Pathfinding Simulation", 100, 100, 1024, 768, false);
 
 	while (TheGame::Instance()->running())
 	{
@@ -29,7 +31,7 @@ int main(int argc, char* args[])
 		TheGame::Instance()->render();
 
 		frameTime = SDL_GetTicks() - frameStart;
-		if (frameTime < DELAY_TIME)
+		if (frameTime< DELAY_TIME)
 		{
 			SDL_Delay(int(DELAY_TIME - frameTime));
 		}
@@ -42,3 +44,4 @@ int main(int argc, char* args[])
 	TheGame::Instance()->clean();
 	return 0;
 }
+

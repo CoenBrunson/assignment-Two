@@ -1,9 +1,11 @@
 #include "DisplayObject.h"
 
-DisplayObject::DisplayObject() = default;
+DisplayObject::DisplayObject()
+= default;
 
 DisplayObject::~DisplayObject()
 {
+	delete m_pParentScene;
 	m_pParentScene = nullptr;
 }
 

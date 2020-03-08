@@ -1,21 +1,19 @@
 #pragma once
-#ifndef __Game__
-#define __Game__
+#ifndef __GAME__
+#define __GAME__
 
 // Core Libraries
 #include <iostream>
-#include <vector>
 #include <string>
+#include <vector>
 #include "SceneState.h"
 
 #include <SDL.h>
 
 // IMGUI Includes
 #include "IMGUI/imgui.h"
-#include "IMGUI_SDL/imgui_sdl.h"
 
 // Game Managers
-#include "Config.h"
 #include "CollisionManager.h"
 
 // Scenes
@@ -23,14 +21,15 @@
 #include "PlayScene.h"
 #include "EndScene.h"
 
+#include "Config.h"
+
 class Game
 {
 public:
 	
-
 	static Game* Instance()
 	{
-		if (s_pInstance == 0)
+		if (s_pInstance == nullptr)
 		{
 			s_pInstance = new Game();
 			return s_pInstance;
@@ -42,7 +41,7 @@ public:
 	// simply set the running variable to true
 	void init() { m_bRunning = true; }
 
-	bool init(const char* title, int xpos, int ypos, int width, int height, bool fullscreen);
+	bool init(const char* title, int x, int y, int width, int height, bool fullscreen);
 
 	// public functions
 	void render() const;
@@ -60,9 +59,10 @@ public:
 	void setFrames(Uint32 frames);
 	Uint32 getFrames() const;
 
-	void changeSceneState(SceneState newState);
+	void changeSceneState(SceneState new_state);
 	void quit();
 
+	
 private:
 	Game();
 	~Game();
@@ -89,5 +89,5 @@ private:
 
 typedef Game TheGame;
 
-#endif /* defined (__Game__) */
+#endif /* defined (__GAME__) */
 

@@ -1,27 +1,26 @@
 #include "Game.h"
-#include <ctime>
-#include "GLM/gtx/string_cast.hpp"
 #include <algorithm>
-#include "TileComparators.h"
+#include <ctime>
 #include <iomanip>
+#include "glm/gtx/string_cast.hpp"
+#include "IMGUI_SDL/imgui_sdl.h"
 
 
-Game* Game::s_pInstance = 0;
+Game* Game::s_pInstance = nullptr;
 
 // Game functions - DO NOT REMOVE ***********************************************
 
 Game::Game() :
-	m_pWindow(NULL), m_pRenderer(NULL), m_currentFrame(0), m_currentScene(NULL), m_bRunning(true), m_currentSceneState(SceneState::NO_SCENE), m_frames(0)
+	m_pWindow(nullptr), m_pRenderer(nullptr), m_currentFrame(0), m_bRunning(true), m_frames(0), m_currentScene(nullptr), m_currentSceneState(NO_SCENE)
 {
-	srand((unsigned)time(NULL));  // random seed
-
-	
+	srand(unsigned(time(nullptr)));  // random seed
 }
 
-Game::~Game() = default;
+Game::~Game()
+= default;
 
 
-bool Game::init(const char* title, const int x, const int y, const int width, const int height, bool fullscreen)
+bool Game::init(const char* title, const int x, const int y, const int width, const int height, const bool fullscreen)
 {
 	auto flags = 0;
 
@@ -36,16 +35,20 @@ bool Game::init(const char* title, const int x, const int y, const int width, co
 		std::cout << "SDL Init success" << std::endl;
 
 		// if succeeded create our window
+		//m_pWindow = SDL_CreateWindow(title, x, y, width, height, flags);
 		m_pWindow = (Config::make_resource(SDL_CreateWindow(title, x, y, width, height, flags)));
 
+		
+		
 		// if window creation successful create our renderer
-		if (m_pWindow != 0)
+		if (m_pWindow != nullptr)
 		{
 			std::cout << "window creation success" << std::endl;
+			//m_pRenderer = SDL_CreateRenderer(m_pWindow.get(), -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
+
 			m_pRenderer = (Config::make_resource(SDL_CreateRenderer(m_pWindow.get(), -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC)));
 
-
-			if (m_pRenderer != 0) // render init success
+			if (m_pRenderer != nullptr) // render init success
 			{
 				std::cout << "renderer creation success" << std::endl;
 				SDL_SetRenderDrawColor(m_pRenderer.get(), 255, 255, 255, 255);
@@ -67,9 +70,6 @@ bool Game::init(const char* title, const int x, const int y, const int width, co
 				return false;
 			}
 
-			
-
-			//TheTextureManager::Instance()->load("../../Assets/textures/animate-alpha.png", "animate", m_pRenderer);
 			start();
 
 		}
@@ -108,7 +108,7 @@ glm::vec2 Game::getMousePosition() const
 	return m_mousePosition;
 }
 
-void Game::setFrames(Uint32 frames)
+void Game::setFrames(const Uint32 frames)
 {
 	m_frames = frames;
 }
@@ -118,10 +118,11 @@ Uint32 Game::getFrames() const
 	return m_frames;
 }
 
-void Game::changeSceneState(SceneState newState)
+void Game::changeSceneState(const SceneState new_state)
 {
-	if (newState != m_currentSceneState) {
-		
+	if (new_state != m_currentSceneState) {
+
+		// scene clean up
 		if (m_currentSceneState != SceneState::NO_SCENE) 
 		{
 			m_currentScene->clean();
@@ -131,10 +132,11 @@ void Game::changeSceneState(SceneState newState)
 			TextureManager::Instance()->clean();
 			std::cout << "cleaning TextureManager" << std::endl;
 		}
-
+		// clean up more
 		delete m_currentScene;
 		m_currentScene = nullptr;
-		m_currentSceneState = newState;
+
+		m_currentSceneState = new_state;
 		
 		switch (m_currentSceneState)
 		{
@@ -155,6 +157,7 @@ void Game::changeSceneState(SceneState newState)
 			break;
 		}
 	}
+	
 }
 
 void Game::quit()
@@ -184,6 +187,7 @@ void Game::clean() const
 	ImGui::DestroyContext();
 
 	TTF_Quit();
+
 	SDL_Quit();
 }
 

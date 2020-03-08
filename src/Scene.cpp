@@ -1,16 +1,16 @@
 #include "Scene.h"
+#include "DisplayObject.h"
 
 Scene::Scene()
-{
-
-}
+= default;
 
 Scene::~Scene()
 {
+	removeAllChildren();
 }
 
 
-void Scene::addChild(DisplayObject * child)
+void Scene::addChild(DisplayObject *child)
 {
 	m_displayList.push_back(child);
 }
@@ -19,7 +19,7 @@ void Scene::removeAllChildren()
 {
 	for(auto child : m_displayList)
 	{
-		child = NULL;
+		child = nullptr;
 	}
 	m_displayList.clear();
 	m_displayList.resize(0);
@@ -27,7 +27,7 @@ void Scene::removeAllChildren()
 }
 
 
-int Scene::numberOfChildren()
+int Scene::numberOfChildren() const
 {
 	return m_displayList.size();
 }

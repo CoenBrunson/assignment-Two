@@ -4,7 +4,6 @@
 
 #include "GameObject.h"
 #include "Scene.h"
-#include "Tile.h"
 
 class DisplayObject : public GameObject
 {

@@ -7,11 +7,11 @@
 class ComparatorByValue
 {
 public:
-	bool operator() (Tile* tile_a, Tile* tile_b) const
+	bool operator() (Tile * tile_a, Tile * tile_b) const
 	{
-		if (tile_a != nullptr)
+		if(tile_a != nullptr)
 		{
-			if (tile_b != nullptr)
+			if(tile_b != nullptr)
 			{
 				return tile_a->getTileValue() < tile_b->getTileValue();
 			}
