@@ -20,7 +20,7 @@ public:
 	virtual void handleEvents() = 0;
 	virtual void start() = 0;
 
-	void addChild(DisplayObject *child);
+	void addChild(DisplayObject* child);
 	void removeAllChildren();
 	int numberOfChildren() const;
 

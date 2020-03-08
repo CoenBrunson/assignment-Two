@@ -17,8 +17,7 @@ Label::Label(const std::string& text, const std::string& font_name, const int fo
 	setPosition(position);
 }
 
-Label::~Label()
-= default;
+Label::~Label() {}
 
 void Label::draw()
 {

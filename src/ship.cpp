@@ -41,7 +41,7 @@ void Ship::m_checkState()
 	switch (getState())
 	{
 	case IDLE:
-		move();
+		//move();
 		break;
 	case SEEK:
 		m_seek();
@@ -61,7 +61,7 @@ void Ship::m_checkState()
 
 void Ship::update()
 {
-	move();
+	m_checkState();
 }
 
 void Ship::clean()

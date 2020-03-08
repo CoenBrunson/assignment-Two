@@ -9,8 +9,7 @@ Scene::~Scene()
 	removeAllChildren();
 }
 
-
-void Scene::addChild(DisplayObject *child)
+void Scene::addChild(DisplayObject* child)
 {
 	m_displayList.push_back(child);
 }
